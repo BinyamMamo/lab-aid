@@ -7,7 +7,7 @@ const COLORS = {
   brown: { value: 1, multiplier: 10, tolerance: 1, color: "bg-amber-800", textColor: "text-white" },
   red: { value: 2, multiplier: 100, tolerance: 2, color: "bg-red-600", textColor: "text-white" },
   orange: { value: 3, multiplier: 1000, color: "bg-orange-500", textColor: "text-white" },
-  yellow: { value: 4, multiplier: 10000, color: "bg-yellow-400" },
+  yellow: { value: 4, multiplier: 10000, color: "bg-yellow-400", textColor: "text-gray-900" },
   green: { value: 5, multiplier: 100000, tolerance: 0.5, color: "bg-green-600", textColor: "text-white" },
   blue: { value: 6, multiplier: 1000000, tolerance: 0.25, color: "bg-blue-600", textColor: "text-white" },
   violet: { value: 7, multiplier: 10000000, tolerance: 0.1, color: "bg-purple-600", textColor: "text-white" },
@@ -236,15 +236,15 @@ function ResistorTool() {
   const resistorValue = calculateResistorValue();
 
   return (
-    <div className="mx-auto px-1">
+    <div className=" px-2">
       {/* Header with Tools and Band Selector */}
-      <div className="w-full flex items-center justify-between gap-2 p-4 px-0">
-        <div className="flex bg-gray-100 p-1 rounded-lg">
+      <div className="w-full flex items-center justify-between gap-3 my-6">
+        <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
           <button
             onClick={() => setResistorType("4band")}
             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${resistorType === "4band"
-              ? "bg-white text-blue-600 shadow-sm"
-              : "text-gray-700 hover:text-gray-900"
+              ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+              : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
               }`}
           >
             4Band
@@ -252,8 +252,8 @@ function ResistorTool() {
           <button
             onClick={() => setResistorType("5band")}
             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${resistorType === "5band"
-              ? "bg-white text-blue-600 shadow-sm"
-              : "text-gray-700 hover:text-gray-900"
+              ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+              : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
               }`}
           >
             5Band
@@ -263,7 +263,7 @@ function ResistorTool() {
         <div className="flex items-center gap-2">
           <button
             onClick={showCamera ? stopCamera : startCamera}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${showCamera ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-gray-100 hover:bg-gray-200'
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors ${showCamera ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800' : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
           >
             <FaCamera size={16} />
@@ -272,7 +272,7 @@ function ResistorTool() {
 
           <button
             onClick={handleImageUpload}
-            className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg"
+            className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
           >
             <FaImage size={16} />
             Upload
@@ -285,28 +285,21 @@ function ResistorTool() {
             accept="image/*"
             className="hidden"
           />
-
-          {/* <button
-            onClick={resetValues}
-            className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg"
-          >
-            <FaRedo size={14} />
-          </button> */}
         </div>
       </div>
 
       {/* Camera View */}
       {showCamera && (
-        <div className="mb-6 relative mx-4">
+        <div className="mb-6 relative">
           <video
             ref={videoRef}
-            className="w-full rounded-lg bg-gray-100"
+            className="w-full rounded-lg bg-gray-100 dark:bg-gray-800"
             playsInline
           />
           <button
             onClick={captureImage}
             disabled={isProcessing}
-            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:bg-gray-400"
+            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
           >
             {isProcessing ? 'Processing...' : 'Capture'}
           </button>
@@ -316,11 +309,11 @@ function ResistorTool() {
 
       {/* Uploaded Image Preview */}
       {uploadedImage && !showCamera && (
-        <div className="mx-4 mb-4 relative">
+        <div className="mb-4 relative">
           <img
             src={uploadedImage}
             alt="Uploaded resistor"
-            className="w-full rounded-lg object-contain max-h-48 bg-gray-50"
+            className="w-full rounded-lg object-contain max-h-48 bg-gray-50 dark:bg-gray-800"
           />
           {isProcessing && (
             <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
@@ -333,7 +326,7 @@ function ResistorTool() {
           {!isProcessing && (
             <button
               onClick={clearUploadedImage}
-              className="absolute top-2 right-2 p-1.5 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full"
+              className="absolute top-2 right-2 p-1.5 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-colors"
             >
               <FaRedo size={12} />
             </button>
@@ -343,152 +336,152 @@ function ResistorTool() {
 
       {/* Error Message */}
       {error && (
-        <div className="mx-4 mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+        <div className="mb-4 p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded-lg">
           {error}
         </div>
       )}
 
-      {/* Sticky Section */}
-      <div className="sticky top-0 bg-white shadow-lg z-10 pb-4 rounded-b-2xl">
+      {/* Results Section */}
+      <div className="bg-white dark:bg-gray-800 shadow-lg z-10 mb-6 rounded-2xl overflow-hidden">
         {/* Result Display */}
-        <div className="text-center mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50">
-          <div className="text-3xl font-bold mb-1">{resistorValue.formatted}</div>
-          <div className="text-gray-600">{resistorValue.tolerance}</div>
+        <div className="text-center p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900">
+          <div className="text-4xl font-bold mb-2 text-gray-900 dark:text-white">{resistorValue.formatted}</div>
+          <div className="text-lg text-gray-600 dark:text-gray-300">{resistorValue.tolerance}</div>
         </div>
 
         {/* Resistor Visual */}
-        <div className="px-4 flex justify-center">
-          <div className="h-16 w-72 bg-amber-200 rounded-full relative shadow-lg">
-            <div className={`absolute left-8 top-0 bottom-0 w-5 ${COLORS[bands.band1].color}`}></div>
+        <div className="p-6 flex justify-center bg-gray-50 dark:bg-gray-900">
+          <div className="h-16 w-72 bg-amber-200 dark:bg-amber-600 rounded-full relative shadow-lg">
+            <div className={`absolute left-8 top-0 bottom-0 w-5 ${COLORS[bands.band1].color} rounded-l-full`}></div>
             <div className={`absolute left-16 top-0 bottom-0 w-5 ${COLORS[bands.band2].color}`}></div>
             {resistorType === "4band" ? (
               <>
                 <div className={`absolute left-24 top-0 bottom-0 w-5 ${COLORS[bands.band3].color}`}></div>
-                <div className={`absolute right-12 top-0 bottom-0 w-5 ${COLORS[bands.band4].color}`}></div>
+                <div className={`absolute right-12 top-0 bottom-0 w-5 ${COLORS[bands.band4].color} rounded-r-full`}></div>
               </>
             ) : (
               <>
                 <div className={`absolute left-24 top-0 bottom-0 w-5 ${COLORS[bands.band3].color}`}></div>
                 <div className={`absolute left-32 top-0 bottom-0 w-5 ${COLORS[bands.band4].color}`}></div>
-                <div className={`absolute right-12 top-0 bottom-0 w-5 ${bands.band5 ? COLORS[bands.band5].color : 'bg-gray-300 opacity-50'}`}></div>
+                  <div className={`absolute right-12 top-0 bottom-0 w-5 ${bands.band5 ? COLORS[bands.band5].color : 'bg-gray-300 dark:bg-gray-600 opacity-50'} rounded-r-full`}></div>
               </>
             )}
+            {/* Wire leads */}
+            <div className="absolute top-1/2 -translate-y-1/2 -left-8 w-8 h-1 bg-gray-400 dark:bg-gray-500"></div>
+            <div className="absolute top-1/2 -translate-y-1/2 -right-8 w-8 h-1 bg-gray-400 dark:bg-gray-500"></div>
           </div>
         </div>
       </div>
 
-      {/* Improved Color Table */}
-      <div className="p-4">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {/* <th className="p-3 text-left border-b font-medium">Color</th> */}
-                <th className="p-3 text-center border-b font-medium">1st</th>
-                <th className="p-3 text-center border-b font-medium">2nd</th>
-                <th className="p-3 text-center border-b font-medium">{resistorType === '4band' ? 'Multiplier' : '3rd'}</th>
-                {resistorType === '5band' && <th className="p-3 text-center border-b font-medium">Multiplier</th>}
-                <th className="p-3 text-center border-b font-medium">Tolerance</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(COLORS).map(([color, data]) => (
-                <tr key={color} className={`hover:bg-opacity-85 transition-colors ${data.color} bg-opacity-90  ${data.textColor || ''}`}>
-                  {/* <td className="p-3 border-b">
-                    <div className="flex items-center gap-3">
-                      <span className="font-medium">{color.charAt(0).toUpperCase() + color.slice(1)}</span>
-                    </div>
-                  </td> */}
-                  <td className="p-3 text-center border-b">
-                    {data.value !== undefined && (
-                      <button
-                        onClick={() => setBands({ ...bands, band1: color })}
-                        className={`px-3 py-1 rounded-full ${bands.band1 === color
-                          ? `bg-white bg-opacity-30 font-medium ring-2 ring-offset-1 ring-white`
-                          : 'hover:bg-white hover:bg-opacity-20'
-                          }`}
-                      >
-                        {data.value}
-                      </button>
-                    )}
-                  </td>
-                  <td className="p-3 text-center border-b">
-                    {data.value !== undefined && (
-                      <button
-                        onClick={() => setBands({ ...bands, band2: color })}
-                        className={`px-3 py-1 rounded-full ${bands.band2 === color
-                          ? `bg-white bg-opacity-30 font-medium ring-2 ring-offset-1 ring-white`
-                          : 'hover:bg-white hover:bg-opacity-20'
-                          }`}
-                      >
-                        {data.value}
-                      </button>
-                    )}
-                  </td>
-                  <td className="p-3 text-center border-b">
-                    {resistorType === '4band' ? (
-                      data.multiplier !== undefined && (
-                        <button
-                          onClick={() => setBands({ ...bands, band3: color })}
-                          className={`px-3 py-1 rounded-full ${bands.band3 === color
-                            ? `bg-white bg-opacity-30 font-medium ring-2 ring-offset-1 ring-white`
-                            : 'hover:bg-white hover:bg-opacity-20'
-                            }`}
-                        >
-                          ×{data.multiplier < 1 ? data.multiplier : formatMultiplier(data.multiplier)}
-                        </button>
-                      )
-                    ) : (
-                      data.value !== undefined && (
-                        <button
-                          onClick={() => setBands({ ...bands, band3: color })}
-                          className={`px-3 py-1 rounded-full ${bands.band3 === color
-                            ? `bg-white bg-opacity-30 font-medium ring-2 ring-offset-1 ring-white`
-                            : 'hover:bg-white hover:bg-opacity-20'
-                            }`}
-                        >
-                          {data.value}
-                        </button>
-                      )
-                    )}
-                  </td>
-                  {resistorType === '5band' && (
-                    <td className="p-3 text-center border-b">
-                      {data.multiplier !== undefined && (
-                        <button
-                          onClick={() => setBands({ ...bands, band4: color })}
-                          className={`px-3 py-1 rounded-full ${bands.band4 === color
-                            ? `bg-white bg-opacity-30 font-medium ring-2 ring-offset-1 ring-white`
-                            : 'hover:bg-white hover:bg-opacity-20'
-                            }`}
-                        >
-                          ×{data.multiplier < 1 ? data.multiplier : formatMultiplier(data.multiplier)}
-                        </button>
-                      )}
-                    </td>
+      {/* Color Selection Table */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
+        <h3 className="p-3 bg-gray-50 dark:bg-gray-700 font-medium text-sm text-gray-700 dark:text-gray-300">Select Band Colors</h3>
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gray-50 dark:bg-gray-700 text-xs sm:text-sm">
+              <th className="px-2 py-3 text-center font-medium w-1/12">Color</th>
+              <th className="px-2 py-3 text-center font-medium w-1/6">1st</th>
+              <th className="px-2 py-3 text-center font-medium w-1/6">2nd</th>
+              <th className="px-2 py-3 text-center font-medium w-1/6">{resistorType === '4band' ? 'Mult' : '3rd'}</th>
+              {resistorType === '5band' && <th className="px-2 py-3 text-center font-medium w-1/6">Mult</th>}
+              <th className="px-2 py-3 text-center font-medium w-1/6">Tol</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(COLORS).map(([color, data]) => (
+              <tr key={color} className="border-t border-gray-100 dark:border-gray-700">
+                <td className="px-2 py-2">
+                  <div className={`w-8 h-4 rounded ${data.color} mx-auto`} title={color}></div>
+                </td>
+                <td className="px-2 py-2 text-center">
+                  {data.value !== undefined && (
+                    <button
+                      onClick={() => setBands({ ...bands, band1: color })}
+                      className={`px-2 py-1 rounded text-xs sm:text-sm transition-colors ${bands.band1 === color
+                        ? `${data.color} ${data.textColor || ''} font-medium`
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                    >
+                      {data.value}
+                    </button>
                   )}
-                  <td className="p-3 text-center border-b">
-                    {data.tolerance !== undefined && (
+                </td>
+                <td className="px-2 py-2 text-center">
+                  {data.value !== undefined && (
+                    <button
+                      onClick={() => setBands({ ...bands, band2: color })}
+                      className={`px-2 py-1 rounded text-xs sm:text-sm transition-colors ${bands.band2 === color
+                        ? `${data.color} ${data.textColor || ''} font-medium`
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                    >
+                      {data.value}
+                    </button>
+                  )}
+                </td>
+                <td className="px-2 py-2 text-center">
+                  {resistorType === '4band' ? (
+                    data.multiplier !== undefined && (
                       <button
-                        onClick={() => setBands({ ...bands, [resistorType === '4band' ? 'band4' : 'band5']: color })}
-                        className={`px-3 py-1 rounded-full ${(resistorType === '4band' ? bands.band4 : bands.band5) === color
-                          ? `bg-white bg-opacity-30 font-medium ring-2 ring-offset-1 ring-white`
-                          : 'hover:bg-white hover:bg-opacity-20'
+                        onClick={() => setBands({ ...bands, band3: color })}
+                        className={`px-2 py-1 rounded text-xs sm:text-sm transition-colors ${bands.band3 === color
+                          ? `${data.color} ${data.textColor || ''} font-medium`
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                           }`}
                       >
-                        ±{data.tolerance}%
+                        ×{data.multiplier < 1 ? data.multiplier : formatMultiplier(data.multiplier)}
+                      </button>
+                    )
+                  ) : (
+                    data.value !== undefined && (
+                      <button
+                        onClick={() => setBands({ ...bands, band3: color })}
+                        className={`px-2 py-1 rounded text-xs sm:text-sm transition-colors ${bands.band3 === color
+                          ? `${data.color} ${data.textColor || ''} font-medium`
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                          }`}
+                      >
+                        {data.value}
+                      </button>
+                    )
+                  )}
+                </td>
+                {resistorType === '5band' && (
+                  <td className="px-2 py-2 text-center">
+                    {data.multiplier !== undefined && (
+                      <button
+                        onClick={() => setBands({ ...bands, band4: color })}
+                        className={`px-2 py-1 rounded text-xs sm:text-sm transition-colors ${bands.band4 === color
+                          ? `${data.color} ${data.textColor || ''} font-medium`
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                          }`}
+                      >
+                        ×{data.multiplier < 1 ? data.multiplier : formatMultiplier(data.multiplier)}
                       </button>
                     )}
                   </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                )}
+                <td className="px-2 py-2 text-center">
+                  {data.tolerance !== undefined && (
+                    <button
+                      onClick={() => setBands({ ...bands, [resistorType === '4band' ? 'band4' : 'band5']: color })}
+                      className={`px-2 py-1 rounded text-xs sm:text-sm transition-colors ${(resistorType === '4band' ? bands.band4 : bands.band5) === color
+                        ? `${data.color} ${data.textColor || ''} font-medium`
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                    >
+                      ±{data.tolerance}%
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* Direction Hint */}
-      <div className="mt-4 text-sm text-gray-500 text-center pb-4">
+      <div className="text-sm text-gray-500 dark:text-gray-400 text-center pb-4">
         Tip: Start from the side with bands grouped closer together
       </div>
     </div>
