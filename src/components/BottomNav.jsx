@@ -1,5 +1,5 @@
 import { BiBook, BiCalculator, BiHome } from 'react-icons/bi';
-import { FaComputer } from 'react-icons/fa6';
+import { FaComputer, FaMicrochip } from 'react-icons/fa6';
 import { FiFileText } from 'react-icons/fi';
 import { NavLink } from 'react-router-dom';
 
@@ -11,6 +11,13 @@ function BottomNav() {
           `flex flex-col items-center justify-center py-2 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`
         }>
           <BiHome size={20} />
+          <span className="text-xs mt-1">Home</span>
+        </NavLink>
+
+        <NavLink to="/resistor-tool" className={({ isActive }) =>
+          `flex flex-col items-center justify-center py-2 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`
+        }>
+          <FaMicrochip size={20} />
           <span className="text-xs mt-1">Resistors</span>
         </NavLink>
 
@@ -25,21 +32,14 @@ function BottomNav() {
           `flex flex-col items-center justify-center py-2 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`
         }>
           <BiCalculator size={20} />
-          <span className="text-xs mt-1">Calculators</span>
+          <span className="text-xs mt-1">Calc</span>
         </NavLink>
 
         <NavLink to="/datasheets" className={({ isActive }) =>
           `flex flex-col items-center justify-center py-2 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`
         }>
           <FiFileText size={20} />
-          <span className="text-xs mt-1">Datasheets</span>
-        </NavLink>
-
-        <NavLink to="/tutorials" className={({ isActive }) =>
-          `flex flex-col items-center justify-center py-2 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`
-        }>
-          <BiBook size={20} />
-          <span className="text-xs mt-1">Tutorials</span>
+          <span className="text-xs mt-1">Docs</span>
         </NavLink>
       </div>
     </div>

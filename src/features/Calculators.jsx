@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaCalculator, FaArrowRight, FaChevronDown, FaPlus, FaMinus } from 'react-icons/fa';
 
 function Calculators() {
@@ -15,6 +15,12 @@ function Calculators() {
         return <ResistorSeriesCalculator />;
       case "ledResistor":
         return <LedResistorCalculator />;
+      case "capacitorReactance":
+        return <CapacitorReactanceCalculator />;
+      case "inductorReactance":
+        return <InductorReactanceCalculator />;
+      case "timer555":
+        return <Timer555Calculator />;
       default:
         return <OhmsLawCalculator />;
     }
@@ -57,6 +63,10 @@ function OhmsLawCalculator() {
   });
 
   const [solveFor, setSolveFor] = useState("resistance");
+
+  useEffect(() => {
+    calculate();
+  }, [values, solveFor]);
 
   const calculate = () => {
     const v = parseFloat(values.voltage);
@@ -125,7 +135,7 @@ function OhmsLawCalculator() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setValues({ ...values, [name]: value });
+    setValues(prev => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -207,15 +217,6 @@ function OhmsLawCalculator() {
         )}
       </div>
 
-      {/* Calculate Button */}
-      <button
-        onClick={calculate}
-        className="w-full mt-4 bg-blue-600 text-white p-2 rounded-lg flex items-center justify-center gap-2"
-      >
-        <FaCalculator size={16} />
-        <span>Calculate</span>
-      </button>
-
       {/* Result */}
       <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900 rounded-lg">
         <div className="font-medium">Result:</div>
@@ -247,6 +248,10 @@ function ResistorParallelCalculator() {
   const [resistors, setResistors] = useState(["", ""]);
   const [result, setResult] = useState("");
 
+  useEffect(() => {
+    calculate();
+  }, [resistors]);
+
   const addResistor = () => {
     setResistors([...resistors, ""]);
   };
@@ -271,7 +276,7 @@ function ResistorParallelCalculator() {
       .filter(r => !isNaN(r) && r > 0);
 
     if (validResistors.length === 0) {
-      setResult("Please enter valid resistor values");
+      setResult("");
       return;
     }
 
@@ -321,15 +326,6 @@ function ResistorParallelCalculator() {
         <span>Add Another Resistor</span>
       </button>
 
-      {/* Calculate Button */}
-      <button
-        onClick={calculate}
-        className="w-full mb-4 bg-blue-600 text-white p-2 rounded-lg flex items-center justify-center gap-2"
-      >
-        <FaCalculator size={16} />
-        <span>Calculate</span>
-      </button>
-
       {/* Result */}
       <div className="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg text-center">
         <div className="font-medium">Equivalent Parallel Resistance:</div>
@@ -348,6 +344,10 @@ function ResistorParallelCalculator() {
 function ResistorSeriesCalculator() {
   const [resistors, setResistors] = useState(["", ""]);
   const [result, setResult] = useState("");
+
+  useEffect(() => {
+    calculate();
+  }, [resistors]);
 
   const addResistor = () => {
     setResistors([...resistors, ""]);
@@ -373,7 +373,7 @@ function ResistorSeriesCalculator() {
       .filter(r => !isNaN(r) && r > 0);
 
     if (validResistors.length === 0) {
-      setResult("Please enter valid resistor values");
+      setResult("");
       return;
     }
 
@@ -422,15 +422,6 @@ function ResistorSeriesCalculator() {
         <span>Add Another Resistor</span>
       </button>
 
-      {/* Calculate Button */}
-      <button
-        onClick={calculate}
-        className="w-full mb-4 bg-blue-600 text-white p-2 rounded-lg flex items-center justify-center gap-2"
-      >
-        <FaCalculator size={16} />
-        <span>Calculate</span>
-      </button>
-
       {/* Result */}
       <div className="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg text-center">
         <div className="font-medium">Equivalent Series Resistance:</div>
@@ -458,9 +449,13 @@ function LedResistorCalculator() {
     power: ""
   });
 
+  useEffect(() => {
+    calculate();
+  }, [values]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setValues({ ...values, [name]: value });
+    setValues(prev => ({ ...prev, [name]: value }));
   };
 
   const calculate = () => {
@@ -470,8 +465,8 @@ function LedResistorCalculator() {
 
     if (isNaN(vSupply) || isNaN(vForward) || isNaN(iLed) || iLed <= 0) {
       setResult({
-        resistance: "Invalid input",
-        power: "Invalid input"
+        resistance: "",
+        power: ""
       });
       return;
     }
@@ -479,7 +474,7 @@ function LedResistorCalculator() {
     if (vForward >= vSupply) {
       setResult({
         resistance: "Forward voltage must be less than supply voltage",
-        power: "N/A"
+        power: "-"
       });
       return;
     }
@@ -541,15 +536,6 @@ function LedResistorCalculator() {
         </div>
       </div>
 
-      {/* Calculate Button */}
-      <button
-        onClick={calculate}
-        className="w-full mb-4 bg-blue-600 text-white p-2 rounded-lg flex items-center justify-center gap-2"
-      >
-        <FaCalculator size={16} />
-        <span>Calculate</span>
-      </button>
-
       {/* Results */}
       <div className="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg space-y-2">
         <div>
@@ -570,6 +556,459 @@ function LedResistorCalculator() {
         <div className="mt-2">
           Choose a resistor with a power rating higher than the calculated power dissipation.
         </div>
+      </div>
+    </div>
+  );
+}
+
+function CapacitorReactanceCalculator() {
+  const [values, setValues] = useState({
+    capacitance: "",
+    frequency: "",
+    unit: "uF" // Default to microfarads
+  });
+
+  const [result, setResult] = useState("");
+
+  useEffect(() => {
+    calculate();
+  }, [values]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setValues(prev => ({ ...prev, [name]: value }));
+  };
+
+  const calculate = () => {
+    let capacitance = parseFloat(values.capacitance);
+    const frequency = parseFloat(values.frequency);
+
+    if (isNaN(capacitance) || isNaN(frequency) || capacitance <= 0 || frequency <= 0) {
+      setResult("");
+      return;
+    }
+
+    // Convert capacitance to Farads based on selected unit
+    switch (values.unit) {
+      case "F":
+        break;
+      case "mF":
+        capacitance *= 1e-3;
+        break;
+      case "uF":
+        capacitance *= 1e-6;
+        break;
+      case "nF":
+        capacitance *= 1e-9;
+        break;
+      case "pF":
+        capacitance *= 1e-12;
+        break;
+    }
+
+    // Calculate reactance: Xc = 1/(2πfC)
+    const reactance = 1 / (2 * Math.PI * frequency * capacitance);
+    setResult(reactance.toFixed(2));
+  };
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        Calculate the reactance of a capacitor at a given frequency.
+      </p>
+
+      {/* Input fields */}
+      <div className="space-y-4 mb-4">
+        <div>
+          <label className="block mb-1 text-sm font-medium">Capacitance</label>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              name="capacitance"
+              value={values.capacitance}
+              onChange={handleInputChange}
+              className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700"
+              placeholder="Capacitance"
+            />
+            <select
+              name="unit"
+              value={values.unit}
+              onChange={handleInputChange}
+              className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700"
+            >
+              <option value="F">F</option>
+              <option value="mF">mF</option>
+              <option value="uF">µF</option>
+              <option value="nF">nF</option>
+              <option value="pF">pF</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="block mb-1 text-sm font-medium">Frequency (Hz)</label>
+          <input
+            type="number"
+            name="frequency"
+            value={values.frequency}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700"
+            placeholder="Frequency"
+          />
+        </div>
+      </div>
+
+      {/* Result */}
+      <div className="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg text-center">
+        <div className="font-medium">Capacitive Reactance:</div>
+        <div className="text-2xl font-bold">{result ? `${result} Ω` : "-"}</div>
+      </div>
+
+      {/* Formula */}
+      <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="font-medium mb-1">Formula:</div>
+        <div className="text-center">Xc = 1 / (2πfC)</div>
+        <div className="mt-2">
+          Where f is frequency in Hz and C is capacitance in Farads
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InductorReactanceCalculator() {
+  const [values, setValues] = useState({
+    inductance: "",
+    frequency: "",
+    unit: "mH" // Default to millihenries
+  });
+
+  const [result, setResult] = useState("");
+
+  useEffect(() => {
+    calculate();
+  }, [values]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setValues(prev => ({ ...prev, [name]: value }));
+  };
+
+  const calculate = () => {
+    let inductance = parseFloat(values.inductance);
+    const frequency = parseFloat(values.frequency);
+
+    if (isNaN(inductance) || isNaN(frequency) || inductance <= 0 || frequency <= 0) {
+      setResult("");
+      return;
+    }
+
+    // Convert inductance to Henries based on selected unit
+    switch (values.unit) {
+      case "H":
+        break;
+      case "mH":
+        inductance *= 1e-3;
+        break;
+      case "uH":
+        inductance *= 1e-6;
+        break;
+      case "nH":
+        inductance *= 1e-9;
+        break;
+    }
+
+    // Calculate reactance: XL = 2πfL
+    const reactance = 2 * Math.PI * frequency * inductance;
+    setResult(reactance.toFixed(2));
+  };
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        Calculate the reactance of an inductor at a given frequency.
+      </p>
+
+      {/* Input fields */}
+      <div className="space-y-4 mb-4">
+        <div>
+          <label className="block mb-1 text-sm font-medium">Inductance</label>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              name="inductance"
+              value={values.inductance}
+              onChange={handleInputChange}
+              className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700"
+              placeholder="Inductance"
+            />
+            <select
+              name="unit"
+              value={values.unit}
+              onChange={handleInputChange}
+              className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700"
+            >
+              <option value="H">H</option>
+              <option value="mH">mH</option>
+              <option value="uH">µH</option>
+              <option value="nH">nH</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="block mb-1 text-sm font-medium">Frequency (Hz)</label>
+          <input
+            type="number"
+            name="frequency"
+            value={values.frequency}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700"
+            placeholder="Frequency"
+          />
+        </div>
+      </div>
+
+      {/* Result */}
+      <div className="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg text-center">
+        <div className="font-medium">Inductive Reactance:</div>
+        <div className="text-2xl font-bold">{result ? `${result} Ω` : "-"}</div>
+      </div>
+
+      {/* Formula */}
+      <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="font-medium mb-1">Formula:</div>
+        <div className="text-center">XL = 2πfL</div>
+        <div className="mt-2">
+          Where f is frequency in Hz and L is inductance in Henries
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Timer555Calculator() {
+  const [values, setValues] = useState({
+    mode: "astable",
+    r1: "",
+    r2: "",
+    c: "",
+    cUnit: "uF"
+  });
+
+  const [result, setResult] = useState({
+    frequency: "",
+    dutyCycle: "",
+    timeHigh: "",
+    timeLow: "",
+    period: ""
+  });
+
+  useEffect(() => {
+    calculate();
+  }, [values]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setValues(prev => ({ ...prev, [name]: value }));
+  };
+
+  const calculate = () => {
+    const r1 = parseFloat(values.r1);
+    const r2 = parseFloat(values.r2);
+    let c = parseFloat(values.c);
+
+    if (isNaN(r1) || isNaN(c) || r1 <= 0 || c <= 0) {
+      setResult({
+        frequency: "",
+        dutyCycle: "",
+        timeHigh: "",
+        timeLow: "",
+        period: ""
+      });
+      return;
+    }
+
+    // Convert capacitance to Farads
+    switch (values.cUnit) {
+      case "F":
+        break;
+      case "mF":
+        c *= 1e-3;
+        break;
+      case "uF":
+        c *= 1e-6;
+        break;
+      case "nF":
+        c *= 1e-9;
+        break;
+      case "pF":
+        c *= 1e-12;
+        break;
+    }
+
+    if (values.mode === "monostable") {
+      // Monostable mode: t = 1.1 × R1 × C
+      const pulseWidth = 1.1 * r1 * c;
+      setResult({
+        frequency: "",
+        dutyCycle: "",
+        timeHigh: (pulseWidth * 1000).toFixed(3), // Convert to ms
+        timeLow: "",
+        period: ""
+      });
+    } else {
+      // Astable mode
+      if (isNaN(r2) || r2 <= 0) {
+        setResult({
+          frequency: "",
+          dutyCycle: "",
+          timeHigh: "",
+          timeLow: "",
+          period: ""
+        });
+        return;
+      }
+
+      const timeHigh = 0.693 * (r1 + r2) * c;
+      const timeLow = 0.693 * r2 * c;
+      const period = timeHigh + timeLow;
+      const frequency = 1 / period;
+      const dutyCycle = (timeHigh / period) * 100;
+
+      setResult({
+        frequency: frequency.toFixed(2),
+        dutyCycle: dutyCycle.toFixed(1),
+        timeHigh: (timeHigh * 1000).toFixed(3), // Convert to ms
+        timeLow: (timeLow * 1000).toFixed(3),   // Convert to ms
+        period: (period * 1000).toFixed(3)       // Convert to ms
+      });
+    }
+  };
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        Calculate 555 timer parameters for astable or monostable mode.
+      </p>
+
+      {/* Mode selection */}
+      <div className="mb-4">
+        <label className="block mb-1 text-sm font-medium">Mode</label>
+        <select
+          name="mode"
+          value={values.mode}
+          onChange={handleInputChange}
+          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700"
+        >
+          <option value="astable">Astable (Free Running)</option>
+          <option value="monostable">Monostable (One-Shot)</option>
+        </select>
+      </div>
+
+      {/* Input fields */}
+      <div className="space-y-4 mb-4">
+        <div>
+          <label className="block mb-1 text-sm font-medium">
+            {values.mode === "monostable" ? "Resistor (R1) (Ω)" : "Resistor 1 (R1) (Ω)"}
+          </label>
+          <input
+            type="number"
+            name="r1"
+            value={values.r1}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700"
+            placeholder="R1 value"
+          />
+        </div>
+
+        {values.mode === "astable" && (
+          <div>
+            <label className="block mb-1 text-sm font-medium">Resistor 2 (R2) (Ω)</label>
+            <input
+              type="number"
+              name="r2"
+              value={values.r2}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700"
+              placeholder="R2 value"
+            />
+          </div>
+        )}
+
+        <div>
+          <label className="block mb-1 text-sm font-medium">Capacitor (C)</label>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              name="c"
+              value={values.c}
+              onChange={handleInputChange}
+              className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700"
+              placeholder="Capacitor value"
+            />
+            <select
+              name="cUnit"
+              value={values.cUnit}
+              onChange={handleInputChange}
+              className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700"
+            >
+              <option value="F">F</option>
+              <option value="mF">mF</option>
+              <option value="uF">µF</option>
+              <option value="nF">nF</option>
+              <option value="pF">pF</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Results */}
+      <div className="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg space-y-2">
+        {values.mode === "monostable" ? (
+          <div>
+            <div className="font-medium">Pulse Width:</div>
+            <div className="text-2xl font-bold">{result.timeHigh ? `${result.timeHigh} ms` : "-"}</div>
+          </div>
+        ) : (
+          <>
+            <div>
+              <div className="font-medium">Frequency:</div>
+              <div className="text-2xl font-bold">{result.frequency ? `${result.frequency} Hz` : "-"}</div>
+            </div>
+            <div>
+              <div className="font-medium">Duty Cycle:</div>
+              <div className="text-xl font-bold">{result.dutyCycle ? `${result.dutyCycle}%` : "-"}</div>
+            </div>
+            <div>
+              <div className="font-medium">Period:</div>
+              <div className="text-xl font-bold">{result.period ? `${result.period} ms` : "-"}</div>
+            </div>
+            <div className="flex gap-4">
+              <div>
+                <div className="font-medium">Time High:</div>
+                <div className="text-lg font-bold">{result.timeHigh ? `${result.timeHigh} ms` : "-"}</div>
+              </div>
+              <div>
+                <div className="font-medium">Time Low:</div>
+                <div className="text-lg font-bold">{result.timeLow ? `${result.timeLow} ms` : "-"}</div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Formula */}
+      <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="font-medium mb-1">Formulas:</div>
+        {values.mode === "monostable" ? (
+          <div>Pulse Width = 1.1 × R1 × C</div>
+        ) : (
+          <>
+            <div>Frequency = 1.44 / ((R1 + 2×R2) × C)</div>
+            <div>Duty Cycle = (R1 + R2) / (R1 + 2×R2)</div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FaSearch, FaCamera, FaChevronDown, FaChevronRight, FaInfoCircle, FaImage, FaTimes } from 'react-icons/fa';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // Mock data for IC database
 const IC_DATABASE = {
@@ -34,8 +35,8 @@ const IC_DATABASE = {
     }
   },
   "7404": {
-    name: "7404 Hex Inverter",
-    description: "The 7404 contains six independent inverters.",
+    name: "7404 Hex Inverter (NOT Gate)",
+    description: "The 7404 contains six independent NOT gates (inverters).",
     packages: ["DIP-14", "SOIC-14"],
     pinout: {
       "1": { name: "1A", description: "Input 1" },
@@ -51,6 +52,111 @@ const IC_DATABASE = {
       "11": { name: "5A", description: "Input 5" },
       "12": { name: "6Y", description: "Output 6" },
       "13": { name: "6A", description: "Input 6" },
+      "14": { name: "VCC", description: "Supply voltage" }
+    }
+  },
+  "7408": {
+    name: "7408 Quad 2-input AND Gate",
+    description: "The 7408 contains four independent 2-input AND gates.",
+    packages: ["DIP-14", "SOIC-14"],
+    pinout: {
+      "1": { name: "1A", description: "Input 1A" },
+      "2": { name: "1B", description: "Input 1B" },
+      "3": { name: "1Y", description: "Output 1" },
+      "4": { name: "2A", description: "Input 2A" },
+      "5": { name: "2B", description: "Input 2B" },
+      "6": { name: "2Y", description: "Output 2" },
+      "7": { name: "GND", description: "Ground (0V)" },
+      "8": { name: "3Y", description: "Output 3" },
+      "9": { name: "3A", description: "Input 3A" },
+      "10": { name: "3B", description: "Input 3B" },
+      "11": { name: "4Y", description: "Output 4" },
+      "12": { name: "4A", description: "Input 4A" },
+      "13": { name: "4B", description: "Input 4B" },
+      "14": { name: "VCC", description: "Supply voltage" }
+    }
+  },
+  "7432": {
+    name: "7432 Quad 2-input OR Gate",
+    description: "The 7432 contains four independent 2-input OR gates.",
+    packages: ["DIP-14", "SOIC-14"],
+    pinout: {
+      "1": { name: "1A", description: "Input 1A" },
+      "2": { name: "1B", description: "Input 1B" },
+      "3": { name: "1Y", description: "Output 1" },
+      "4": { name: "2A", description: "Input 2A" },
+      "5": { name: "2B", description: "Input 2B" },
+      "6": { name: "2Y", description: "Output 2" },
+      "7": { name: "GND", description: "Ground (0V)" },
+      "8": { name: "3Y", description: "Output 3" },
+      "9": { name: "3A", description: "Input 3A" },
+      "10": { name: "3B", description: "Input 3B" },
+      "11": { name: "4Y", description: "Output 4" },
+      "12": { name: "4A", description: "Input 4A" },
+      "13": { name: "4B", description: "Input 4B" },
+      "14": { name: "VCC", description: "Supply voltage" }
+    }
+  },
+  "7400": {
+    name: "7400 Quad 2-input NAND Gate",
+    description: "The 7400 contains four independent 2-input NAND gates.",
+    packages: ["DIP-14", "SOIC-14"],
+    pinout: {
+      "1": { name: "1A", description: "Input 1A" },
+      "2": { name: "1B", description: "Input 1B" },
+      "3": { name: "1Y", description: "Output 1" },
+      "4": { name: "2A", description: "Input 2A" },
+      "5": { name: "2B", description: "Input 2B" },
+      "6": { name: "2Y", description: "Output 2" },
+      "7": { name: "GND", description: "Ground (0V)" },
+      "8": { name: "3Y", description: "Output 3" },
+      "9": { name: "3A", description: "Input 3A" },
+      "10": { name: "3B", description: "Input 3B" },
+      "11": { name: "4Y", description: "Output 4" },
+      "12": { name: "4A", description: "Input 4A" },
+      "13": { name: "4B", description: "Input 4B" },
+      "14": { name: "VCC", description: "Supply voltage" }
+    }
+  },
+  "7402": {
+    name: "7402 Quad 2-input NOR Gate",
+    description: "The 7402 contains four independent 2-input NOR gates.",
+    packages: ["DIP-14", "SOIC-14"],
+    pinout: {
+      "1": { name: "1Y", description: "Output 1" },
+      "2": { name: "1A", description: "Input 1A" },
+      "3": { name: "1B", description: "Input 1B" },
+      "4": { name: "2Y", description: "Output 2" },
+      "5": { name: "2A", description: "Input 2A" },
+      "6": { name: "2B", description: "Input 2B" },
+      "7": { name: "GND", description: "Ground (0V)" },
+      "8": { name: "3A", description: "Input 3A" },
+      "9": { name: "3B", description: "Input 3B" },
+      "10": { name: "3Y", description: "Output 3" },
+      "11": { name: "4A", description: "Input 4A" },
+      "12": { name: "4B", description: "Input 4B" },
+      "13": { name: "4Y", description: "Output 4" },
+      "14": { name: "VCC", description: "Supply voltage" }
+    }
+  },
+  "7486": {
+    name: "7486 Quad 2-input XOR Gate",
+    description: "The 7486 contains four independent 2-input XOR gates.",
+    packages: ["DIP-14", "SOIC-14"],
+    pinout: {
+      "1": { name: "1A", description: "Input 1A" },
+      "2": { name: "1B", description: "Input 1B" },
+      "3": { name: "1Y", description: "Output 1" },
+      "4": { name: "2A", description: "Input 2A" },
+      "5": { name: "2B", description: "Input 2B" },
+      "6": { name: "2Y", description: "Output 2" },
+      "7": { name: "GND", description: "Ground (0V)" },
+      "8": { name: "3Y", description: "Output 3" },
+      "9": { name: "3A", description: "Input 3A" },
+      "10": { name: "3B", description: "Input 3B" },
+      "11": { name: "4Y", description: "Output 4" },
+      "12": { name: "4A", description: "Input 4A" },
+      "13": { name: "4B", description: "Input 4B" },
       "14": { name: "VCC", description: "Supply voltage" }
     }
   },
@@ -77,7 +183,6 @@ const IC_DATABASE = {
       "1": { name: "PC6/RESET", description: "Reset pin / Digital pin" },
       "2": { name: "PD0/RX", description: "Digital pin / UART RX" },
       "3": { name: "PD1/TX", description: "Digital pin / UART TX" },
-      // Partial pinout for brevity
       "7": { name: "VCC", description: "Supply voltage" },
       "8": { name: "GND", description: "Ground (0V)" },
       "9": { name: "PB6/XTAL1", description: "Crystal oscillator pin 1" },
@@ -115,6 +220,24 @@ function ICFinder() {
   const [showCamera, setShowCamera] = useState(false);
   const fileInputRef = useRef(null);
   const [focusedPin, setFocusedPin] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Check for passed search query from Home page
+  useEffect(() => {
+    if (location.state?.searchQuery) {
+      setSearchQuery(location.state.searchQuery);
+      // Optionally trigger search automatically
+      const foundIC = Object.entries(IC_DATABASE).find(([id, ic]) => {
+        const query = location.state.searchQuery.toLowerCase();
+        return id.toLowerCase().includes(query) || ic.name.toLowerCase().includes(query);
+      });
+
+      if (foundIC) {
+        handleSelectIC(foundIC[0]);
+      }
+    }
+  }, [location.state]);
 
   // Handle search input change
   const handleSearchChange = (e) => {
@@ -218,7 +341,7 @@ function ICFinder() {
       )}
 
       {/* IC Categories */}
-      <div className="mb-4 overflow-x-auto">
+      <div className="mb- pb-2 overflow-x-auto">
         <div className="flex space-x-2 pb-1">
           {IC_CATEGORIES.map((category) => (
             <button
